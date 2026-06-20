@@ -1,0 +1,51 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - runner: ubuntu-latest
+            arch: x86_64
+          - runner: ubuntu-24.04-arm
+            arch: aarch64
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build static binary
+        run: |
+          mkdir -p bin
+          docker run --rm \
+            -v "$PWD":/src \
+            -w /src \
+            crystallang/crystal:latest-alpine \
+            sh -c "
+              apk add --no-cache \
+                bash git binutils \
+                musl-dev \
+                openssl-dev openssl-libs-static \
+                yaml-dev yaml-static \
+                zlib-dev zlib-static \
+                gmp-dev pcre2-dev \
+                libevent-dev libevent-static \
+                gc-dev gc-static && \
+              shards install && \
+              crystal build src/dirless_connect.cr \
+                -o bin/dirless-connect \
+                --release --no-debug --static && \
+              strip bin/dirless-connect
+            "
+
+      - name: Rename binary with arch suffix
+        run: mv bin/dirless-connect bin/dirless-connect-${{ matrix.arch }}
+
+      - name: Upload to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: bin/dirless-connect-${{ matrix.arch }}

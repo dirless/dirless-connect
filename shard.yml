@@ -1,0 +1,24 @@
+name: dirless-connect
+version: 0.0.5
+
+description: End-user CLI for Dirless — SSH certificate issuance and agesh sessions
+
+authors:
+  - Dirless <info@dirless.com>
+
+license: Apache-2.0
+
+crystal: ">= 1.20.0"
+
+dependencies:
+  age-crystal:
+    github: dirless/age-crystal
+    version: 0.2.1
+
+  toml:
+    github: crystal-community/toml.cr
+    version: "~> 0.8.1"
+
+development_dependencies:
+  ameba:
+    github: crystal-ameba/ameba
