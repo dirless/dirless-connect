@@ -37,7 +37,7 @@ jobs:
                 gmp-dev pcre2-dev \
                 libevent-dev libevent-static \
                 gc-dev gc-static && \
-              shards install && \
+              shards install --without-development && \
               crystal build src/dirless_connect.cr \
                 -o bin/dirless-connect \
                 --release --no-debug --static && \
