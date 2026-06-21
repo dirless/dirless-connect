@@ -5,7 +5,7 @@ require "./dirless/connect/commands/ssh_login"
 
 module Dirless
   module Connect
-    VERSION = "0.0.5"
+    VERSION = "0.0.6"
 
     def self.usage : Nil
       STDERR.puts <<-USAGE
