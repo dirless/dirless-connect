@@ -84,7 +84,7 @@ module Dirless
               STDOUT.puts "Check your email (#{email}) for a registration link."
               STDOUT.puts "Click it to complete setup, then run:"
               STDOUT.puts ""
-              STDOUT.puts "  dirless-connect ssh login"
+              STDOUT.puts "dirless-connect ssh login"
               STDOUT.puts ""
               0
             when 404
