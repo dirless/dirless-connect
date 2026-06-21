@@ -1,5 +1,5 @@
 name: dirless-connect
-version: 0.0.5
+version: 0.0.6
 
 description: End-user CLI for Dirless — SSH certificate issuance and agesh sessions
 

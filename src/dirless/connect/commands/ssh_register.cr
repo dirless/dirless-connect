@@ -14,9 +14,10 @@ module Dirless
         def run(args : Array(String)) : Int32
           customer_name, ops_url, _ = Config.load
 
-          # Allow overrides via flags: --customer NAME --email EMAIL --url URL
+          # Allow overrides via flags: --customer NAME --email EMAIL --username NAME --url URL
           i = 0
           email = ""
+          username = ""
           while i < args.size
             case args[i]
             when "--customer"
@@ -25,6 +26,9 @@ module Dirless
             when "--email"
               i += 1
               email = args[i]? || ""
+            when "--username"
+              i += 1
+              username = args[i]? || ""
             when "--url", "--ops-url"
               i += 1
               ops_url = args[i]? || ops_url
@@ -42,17 +46,19 @@ module Dirless
             email = gets.to_s.strip.downcase
           end
 
-          if customer_name.empty? || email.empty?
-            STDERR.puts "Error: customer name and email are required."
+          if username.empty?
+            print "Your Linux username on enrolled hosts: "
+            username = gets.to_s.strip.downcase
+          end
+
+          if customer_name.empty? || email.empty? || username.empty?
+            STDERR.puts "Error: customer name, email, and username are required."
             return 1
           end
 
           STDOUT.puts "Generating keypairs…"
           age_public_key = Keypairs.ensure_age_key
           ssh_public_key = Keypairs.ensure_ssh_key
-
-          # Derive username the same way the server does: local-part of email, non-alphanumeric → '_'.
-          username = email.split("@").first.downcase.gsub(/[^a-z0-9_-]/, "_")
 
           # Persist customer name, ops URL, and username for future logins.
           Config.save(customer_name, ops_url, username)
@@ -66,6 +72,7 @@ module Dirless
               body: {
                 "customer_name"  => customer_name,
                 "email"          => email,
+                "username"       => username,
                 "age_public_key" => age_public_key,
                 "ssh_public_key" => ssh_public_key,
               }.to_json,
